@@ -17,9 +17,40 @@ class Student {
     }
 }
 
-class StudentViewModel {
+//class StudentViewModel {
+//    public students: KnockoutObservableArray<Student>;
+//    constructor() {
+//        this.students = ko.observableArray([]);
+//    }
+//}
+
+class Pagination {
     public students: KnockoutObservableArray<Student>;
+    currentPage: any;
+    pageSize: KnockoutObservable<string>;
+    currentPageIndex: KnockoutObservable<number>;
+
+    nextPage = function () {
+        if (((this.currentPageIndex() + 1) * this.pageSize()) < this.students().length) {
+            this.currentPageIndex(this.currentPageIndex() + 1);
+        }
+        else {
+            this.currentPageIndex(0);
+        }
+    };
+    previousPage = function () {
+        if (this.currentPageIndex() > 0) {
+            this.currentPageIndex(this.currentPageIndex() - 1);
+        }
+        else {
+            this.currentPageIndex((Math.ceil(this.students().length / this.pageSize())) - 1);
+        }
+    };
+
     constructor() {
+        this.currentPage = ko.observableArray([]);
+        this.pageSize = ko.observable('5');
+        this.currentPageIndex = ko.observable(0);
         this.students = ko.observableArray([]);
     }
 }
@@ -28,16 +59,21 @@ $(document).ready(function () {
     var serverData: any[];
     serverData = JSON.parse($("#serverJSON").val());
     var ViewModel = {
-        StudentViewModel: new StudentViewModel()
+        Pagination: new Pagination()
     };
-    //var vm: StudentViewModel;
-    //vm = new StudentViewModel();
+    
     var i: number;
-
     for (i = 0; i < serverData.length; i++) {
         var serverStudent: any;
         serverStudent = serverData[i];
-        ViewModel.StudentViewModel.students.push(new Student(serverStudent.Id, serverStudent.FirstName, serverStudent.LastName, serverStudent.Gender, serverStudent.Phone));
+        ViewModel.Pagination.students.push(new Student(serverStudent.Id, serverStudent.FirstName, serverStudent.LastName, serverStudent.Gender, serverStudent.Phone));
     }
+
+    ViewModel.Pagination.currentPage = ko.computed(function () {
+        var pagesize = parseInt(ViewModel.Pagination.pageSize(),10),
+            startIndex = pagesize * ViewModel.Pagination.currentPageIndex(),
+            endIndex = startIndex + pagesize;
+        return ViewModel.Pagination.students.slice(startIndex, endIndex);
+    });
     ko.applyBindings(ViewModel);
 });
