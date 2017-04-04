@@ -3,6 +3,31 @@
 var Student = (function () {
     // constructor
     function Student(Id, FirstName, LastName, Gender, Phone) {
+        this.genders = [
+            "Male",
+            "Female",
+            "Other"
+        ];
+        // Добавление студента
+        this.addStudent = function () {
+            var dataObject = ko.toJSON(this);
+            $.ajax({
+                url: '/home/AddStudent',
+                type: 'post',
+                data: dataObject,
+                contentType: 'application/json',
+                success: function (data) {
+                    alert(dataObject);
+                    this.Id = null;
+                    this.FirstName = '';
+                    this.LastName = '';
+                    this.Phone = '';
+                },
+                error: function () {
+                    alert(dataObject);
+                }
+            });
+        };
         this.Id = ko.observable(Id);
         this.FirstName = ko.observable(FirstName);
         this.LastName = ko.observable(LastName);
@@ -46,7 +71,8 @@ $(document).ready(function () {
     var serverData;
     serverData = JSON.parse($("#serverJSON").val());
     var ViewModel = {
-        Pagination: new Pagination()
+        Pagination: new Pagination(),
+        Student: new Student(null, '', '', '', '')
     };
     var i;
     for (i = 0; i < serverData.length; i++) {
@@ -60,4 +86,3 @@ $(document).ready(function () {
     });
     ko.applyBindings(ViewModel);
 });
-//# sourceMappingURL=TableScript.js.map

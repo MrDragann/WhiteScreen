@@ -15,6 +15,29 @@ class Student {
         this.Gender = ko.observable(Gender);
         this.Phone = ko.observable(Phone);
     }
+    genders = [
+        "Male",
+        "Female",
+        "Other"
+    ];
+    // Добавление студента
+    addStudent = function () {
+        var dataObject = ko.toJSON(this);
+
+        $.ajax({
+            url: '/home/AddStudent',
+            type: 'post',
+            data: dataObject,
+            contentType: 'application/json',
+            success: function (data) {
+                console.log(dataObject);
+                
+            },
+            error: function () {
+                console.log(dataObject);
+            }
+        });
+    };
 }
 
 //class StudentViewModel {
@@ -59,7 +82,8 @@ $(document).ready(function () {
     var serverData: any[];
     serverData = JSON.parse($("#serverJSON").val());
     var ViewModel = {
-        Pagination: new Pagination()
+        Pagination: new Pagination(),
+        Student: new Student(null,'','','','')
     };
     
     var i: number;
