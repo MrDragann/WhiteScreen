@@ -15,14 +15,12 @@ class Student {
         this.Gender = ko.observable(Gender);
         this.Phone = ko.observable(Phone);
     }
-    genders = [
-        "Male",
-        "Female",
-        "Other"
-    ];
+}
+
+class StudentChanges {
     // Добавление студента
-    addStudent(): void {
-        var dataObject = ko.toJSON(this);
+    addStudent(student: any): void {
+        var dataObject = ko.toJSON(student.Student);
 
         $.ajax({
             url: '/home/AddStudent',
@@ -31,24 +29,34 @@ class Student {
             contentType: 'application/json',
             success: function (data) {
                 console.log(dataObject);
-                
+                StudentViewModel.students.push(data);
             },
             error: function () {
                 console.log(dataObject);
             }
         });
     };
+
+    // Удаление студента из списка
+    removeStudent(student: Student): void {
+        $.ajax({
+            url: '/home/DeleteStudent/' + student.Id,
+            type: 'post',
+            contentType: 'application/json',
+            success: function () {
+                StudentViewModel.students.remove(student);
+            }
+        });
+    };
+    genders = [
+        "Male",
+        "Female",
+        "Other"
+    ];
 }
 
-//class StudentViewModel {
-//    public students: KnockoutObservableArray<Student>;
-//    constructor() {
-//        this.students = ko.observableArray([]);
-//    }
-//}
-
 class StudentViewModel {
-    public students: KnockoutObservableArray<Student>;
+    public static students: KnockoutObservableArray<Student>;
 
     currentPage: KnockoutObservable<any>;
     pageSize: KnockoutObservable<number>;
@@ -58,24 +66,44 @@ class StudentViewModel {
     currentColumn: KnockoutObservable<string>;
     iconType: KnockoutObservable<string>;
 
-    static readonlyTemplate: KnockoutObservable<string>;
-    static editTemplate: KnockoutObservable<string>;
+    static readonlyTemplate: any;
+    static editTemplate: any;
 
     constructor() {
         this.currentPage = ko.observableArray([]);
         this.pageSize = ko.observable(5);
         this.currentPageIndex = ko.observable(0);
-        this.students = ko.observableArray([]);
+        StudentViewModel.students = ko.observableArray([]);
         StudentViewModel.sortType = "ascending";
         this.currentColumn = ko.observable("");
         this.iconType = ko.observable("");
         StudentViewModel.readonlyTemplate = ko.observable("readonlyTemplate");
-        StudentViewModel.editTemplate = ko.observable("");
+        StudentViewModel.editTemplate = ko.observable();
+        var _this = this;
+        $.getJSON('/home/GetStudents', function (data) {
+            //$.each(data, function (key, value) {
+            //    ViewModel.StudentViewModel.students.push(new Student(value.Id, value.FirstName, value.LastName, value.Gender, value.Phone));
+            //});
+            StudentViewModel.students(data);
+        });
+        this.currentPage = ko.computed(function () {
+            var pagesize = parseInt(_this.pageSize().toString(), 10),
+                startIndex = pagesize * _this.currentPageIndex(),
+                endIndex = startIndex + pagesize;
+            return StudentViewModel.students.slice(startIndex, endIndex);
+        });
     }
+    self: StudentViewModel = this;
+    //currentPage = ko.computed(function () {
+    //    var pagesize = parseInt(self.pageSize().toString(), 10),
+    //        startIndex = pagesize * self.currentPageIndex(),
+    //        endIndex = startIndex + pagesize;
+    //    return self.students.slice(startIndex, endIndex);
+    //});
 
     // Смена шаблона редактирования
     currentTemplate = function (tmpl) {
-        return tmpl === StudentViewModel.editTemplate ? 'editTemplate' : StudentViewModel.readonlyTemplate;
+        return tmpl === StudentViewModel.editTemplate() ? 'editTemplate' : StudentViewModel.readonlyTemplate();
     };
 
     // Сброс шаблона на обычный
@@ -84,7 +112,7 @@ class StudentViewModel {
     };
 
     nextPage(): void {
-        if (((this.currentPageIndex() + 1) * this.pageSize()) < this.students().length) {
+        if (((this.currentPageIndex() + 1) * this.pageSize()) < StudentViewModel.students().length) {
             this.currentPageIndex(this.currentPageIndex() + 1);
         }
         else {
@@ -96,26 +124,15 @@ class StudentViewModel {
             this.currentPageIndex(this.currentPageIndex() - 1);
         }
         else {
-            this.currentPageIndex((Math.ceil(this.students().length / this.pageSize())) - 1);
+            this.currentPageIndex((Math.ceil(StudentViewModel.students().length / this.pageSize())) - 1);
         }
-    };
-
-    // Удаление студента из списка
-    removeStudent(student: Student): void {
-        $.ajax({
-            url: '/home/DeleteStudent/' + student.Id,
-            type: 'post',
-            contentType: 'application/json',
-            success: function () {
-            }
-        });
     };
 
     // Сортировка
     sortTable(students: KnockoutObservableArray<Student>, e): void {
         var orderProp = $(e.target).attr("data-column")
         this.currentColumn(orderProp);
-        this.students.sort(function (left, right) {
+        StudentViewModel.students.sort(function (left, right) {
             var leftVal = left[orderProp];
             var rightVal = right[orderProp];
             if (StudentViewModel.sortType == "ascending") {
@@ -135,20 +152,21 @@ $(document).ready(function () {
 
     var ViewModel = {
         StudentViewModel: new StudentViewModel(),
+        StudentChanges: new StudentChanges(),
         Student: new Student(null,'','','','')
     };
-    $.getJSON('/home/GetStudents', function (data) {
-        //$.each(data, function (key, value) {
-        //    ViewModel.StudentViewModel.students.push(new Student(value.Id, value.FirstName, value.LastName, value.Gender, value.Phone));
-        //});
-        ViewModel.StudentViewModel.students(data);
-    });
+    //$.getJSON('/home/GetStudents', function (data) {
+    //    //$.each(data, function (key, value) {
+    //    //    ViewModel.StudentViewModel.students.push(new Student(value.Id, value.FirstName, value.LastName, value.Gender, value.Phone));
+    //    //});
+    //    ViewModel.StudentViewModel.students(data);
+    //});
 
-    ViewModel.StudentViewModel.currentPage = ko.computed(function () {
-        var pagesize = parseInt(ViewModel.StudentViewModel.pageSize().toString(), 10),
-            startIndex = pagesize * ViewModel.StudentViewModel.currentPageIndex(),
-            endIndex = startIndex + pagesize;
-        return ViewModel.StudentViewModel.students.slice(startIndex, endIndex);
-    });
+    //ViewModel.StudentViewModel.currentPage = ko.computed(function () {
+    //    var pagesize = parseInt(ViewModel.StudentViewModel.pageSize().toString(), 10),
+    //        startIndex = pagesize * ViewModel.StudentViewModel.currentPageIndex(),
+    //        endIndex = startIndex + pagesize;
+    //    return ViewModel.StudentViewModel.students.slice(startIndex, endIndex);
+    //});
     ko.applyBindings(ViewModel);
 });

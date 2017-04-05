@@ -2,20 +2,20 @@
 <form role="form">
     <div class="form-group">
         <label for="inpFirstName">Имя</label>
-        <input id="inpFirstName" type="text" class="form-control" data-bind="value: FirstName" />
+        <input id="inpFirstName" type="text" class="form-control" data-bind="value: Student.FirstName" />
     </div>
     <div class="form-group">
         <label for="inpLastName">Фамилия</label>
-        <input id="inpLastName" type="text" class="form-control" data-bind="value: LastName" />
+        <input id="inpLastName" type="text" class="form-control" data-bind="value: Student.LastName" />
     </div>
     <div class="form-group">
         <label for="inpGender">Пол</label>
-        <select id="inpGender" class="form-control" data-bind="options: genders, value: Gender"></select>
+        <select id="inpGender" class="form-control" data-bind="options: StudentChanges.genders, value: Student.Gender"></select>
     </div>
     <div class="form-group">
         <label for="txtPhone">Телефон</label>
-        <input id="txtPhone" class="form-control" data-bind="value: Phone" />
+        <input id="txtPhone" class="form-control" data-bind="value: Student.Phone" />
     </div>
 </form>
 
-<input type="button" id="btnAddStudent" class="btn btn-primary" value="Добавить" data-bind="click: addStudent" />
+<input type="button" id="btnAddStudent" class="btn btn-primary" value="Добавить" data-bind="click: StudentChanges.addStudent" />

@@ -3,7 +3,6 @@
 @{
     ViewBag.Title = "Home Page";
 }
-<input type="hidden" id="serverJSON" value="@Newtonsoft.Json.JsonConvert.SerializeObject(Model)" />
 <div class="page-header">
     <h2 class="text-center">Регистрация студентов</h2>
 </div>
@@ -15,7 +14,7 @@
             <div class="panel-heading">
                 <h2 class="panel-title">Добавить нового студента</h2>
             </div>
-            <div class="panel-body" data-bind="with: Student">
+            <div class="panel-body" @*data-bind="with: Student"*@>
                 @Html.Partial("_RegisterStudent")
             </div>
         </div>
