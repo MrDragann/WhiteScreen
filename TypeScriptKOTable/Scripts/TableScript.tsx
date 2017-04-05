@@ -39,14 +39,15 @@ class StudentChanges {
 
     // Удаление студента из списка
     removeStudent(student: Student): void {
-        $.ajax({
-            url: '/home/DeleteStudent/' + student.Id,
-            type: 'post',
-            contentType: 'application/json',
-            success: function () {
-                StudentViewModel.students.remove(student);
-            }
-        });
+        var stud = student.Id;
+        StudentViewModel.students.remove(student);
+        //$.ajax({
+        //    url: '/home/DeleteStudent/' + student.Id,
+        //    type: 'post',
+        //    contentType: 'application/json',
+        //    success: function () { 
+        //    }
+        //});
     };
     genders = [
         "Male",
@@ -54,7 +55,6 @@ class StudentChanges {
         "Other"
     ];
 }
-
 class StudentViewModel {
     public static students: KnockoutObservableArray<Student>;
 
@@ -66,10 +66,11 @@ class StudentViewModel {
     currentColumn: KnockoutObservable<string>;
     iconType: KnockoutObservable<string>;
 
-    static readonlyTemplate: any;
-    static editTemplate: any;
+    readonlyTemplate: KnockoutObservable<any>;
+    editTemplate: KnockoutObservable<any>;
 
     constructor() {
+        var _this = this;
         this.currentPage = ko.observableArray([]);
         this.pageSize = ko.observable(5);
         this.currentPageIndex = ko.observable(0);
@@ -77,14 +78,13 @@ class StudentViewModel {
         StudentViewModel.sortType = "ascending";
         this.currentColumn = ko.observable("");
         this.iconType = ko.observable("");
-        StudentViewModel.readonlyTemplate = ko.observable("readonlyTemplate");
-        StudentViewModel.editTemplate = ko.observable();
-        var _this = this;
+        this.readonlyTemplate = ko.observable("readonlyTemplate");
+        this.editTemplate = ko.observable();
         $.getJSON('/home/GetStudents', function (data) {
-            //$.each(data, function (key, value) {
-            //    ViewModel.StudentViewModel.students.push(new Student(value.Id, value.FirstName, value.LastName, value.Gender, value.Phone));
-            //});
-            StudentViewModel.students(data);
+            $.each(data, function (key, value) {
+                StudentViewModel.students.push(new Student(value.Id, value.FirstName, value.LastName, value.Gender, value.Phone));
+            });
+            //StudentViewModel.students(data);
         });
         this.currentPage = ko.computed(function () {
             var pagesize = parseInt(_this.pageSize().toString(), 10),
@@ -93,22 +93,25 @@ class StudentViewModel {
             return StudentViewModel.students.slice(startIndex, endIndex);
         });
     }
-    self: StudentViewModel = this;
-    //currentPage = ko.computed(function () {
-    //    var pagesize = parseInt(self.pageSize().toString(), 10),
-    //        startIndex = pagesize * self.currentPageIndex(),
-    //        endIndex = startIndex + pagesize;
-    //    return self.students.slice(startIndex, endIndex);
-    //});
-
+    
     // Смена шаблона редактирования
+    //currentTemplate = function (tmpl) {
+    //    return tmpl === StudentViewModel.editTemplate() ? 'editTemplate' : StudentViewModel.readonlyTemplate();
+    //};
     currentTemplate = function (tmpl) {
-        return tmpl === StudentViewModel.editTemplate() ? 'editTemplate' : StudentViewModel.readonlyTemplate();
+        
+        if (tmpl === this.editTemplate()) {
+            return 'editTemplate';
+        }
+        else {
+            return this.readonlyTemplate()
+        }
+        //return tmpl === self.editTemplate() ? 'editTemplate' : self.readonlyTemplate();
     };
 
     // Сброс шаблона на обычный
     resetTemplate = function (t) {
-        StudentViewModel.editTemplate("readonlyTemplate");
+        this.editTemplate("readonlyTemplate");
     };
 
     nextPage(): void {
@@ -155,18 +158,6 @@ $(document).ready(function () {
         StudentChanges: new StudentChanges(),
         Student: new Student(null,'','','','')
     };
-    //$.getJSON('/home/GetStudents', function (data) {
-    //    //$.each(data, function (key, value) {
-    //    //    ViewModel.StudentViewModel.students.push(new Student(value.Id, value.FirstName, value.LastName, value.Gender, value.Phone));
-    //    //});
-    //    ViewModel.StudentViewModel.students(data);
-    //});
-
-    //ViewModel.StudentViewModel.currentPage = ko.computed(function () {
-    //    var pagesize = parseInt(ViewModel.StudentViewModel.pageSize().toString(), 10),
-    //        startIndex = pagesize * ViewModel.StudentViewModel.currentPageIndex(),
-    //        endIndex = startIndex + pagesize;
-    //    return ViewModel.StudentViewModel.students.slice(startIndex, endIndex);
-    //});
+    
     ko.applyBindings(ViewModel);
 });
