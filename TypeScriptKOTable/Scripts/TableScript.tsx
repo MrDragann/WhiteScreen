@@ -21,7 +21,7 @@ class Student {
         "Other"
     ];
     // Добавление студента
-    addStudent = function () {
+    addStudent(): void {
         var dataObject = ko.toJSON(this);
 
         $.ajax({
@@ -47,13 +47,43 @@ class Student {
 //    }
 //}
 
-class Pagination {
+class StudentViewModel {
     public students: KnockoutObservableArray<Student>;
-    currentPage: any;
-    pageSize: KnockoutObservable<string>;
+
+    currentPage: KnockoutObservable<any>;
+    pageSize: KnockoutObservable<number>;
     currentPageIndex: KnockoutObservable<number>;
 
-    nextPage = function () {
+    static sortType: string;
+    currentColumn: KnockoutObservable<string>;
+    iconType: KnockoutObservable<string>;
+
+    static readonlyTemplate: KnockoutObservable<string>;
+    static editTemplate: KnockoutObservable<string>;
+
+    constructor() {
+        this.currentPage = ko.observableArray([]);
+        this.pageSize = ko.observable(5);
+        this.currentPageIndex = ko.observable(0);
+        this.students = ko.observableArray([]);
+        StudentViewModel.sortType = "ascending";
+        this.currentColumn = ko.observable("");
+        this.iconType = ko.observable("");
+        StudentViewModel.readonlyTemplate = ko.observable("readonlyTemplate");
+        StudentViewModel.editTemplate = ko.observable("");
+    }
+
+    // Смена шаблона редактирования
+    currentTemplate = function (tmpl) {
+        return tmpl === StudentViewModel.editTemplate ? 'editTemplate' : StudentViewModel.readonlyTemplate;
+    };
+
+    // Сброс шаблона на обычный
+    resetTemplate = function (t) {
+        StudentViewModel.editTemplate("readonlyTemplate");
+    };
+
+    nextPage(): void {
         if (((this.currentPageIndex() + 1) * this.pageSize()) < this.students().length) {
             this.currentPageIndex(this.currentPageIndex() + 1);
         }
@@ -61,7 +91,7 @@ class Pagination {
             this.currentPageIndex(0);
         }
     };
-    previousPage = function () {
+    previousPage(): void {
         if (this.currentPageIndex() > 0) {
             this.currentPageIndex(this.currentPageIndex() - 1);
         }
@@ -70,34 +100,55 @@ class Pagination {
         }
     };
 
-    constructor() {
-        this.currentPage = ko.observableArray([]);
-        this.pageSize = ko.observable('5');
-        this.currentPageIndex = ko.observable(0);
-        this.students = ko.observableArray([]);
-    }
+    // Удаление студента из списка
+    removeStudent(student: Student): void {
+        $.ajax({
+            url: '/home/DeleteStudent/' + student.Id,
+            type: 'post',
+            contentType: 'application/json',
+            success: function () {
+            }
+        });
+    };
+
+    // Сортировка
+    sortTable(students: KnockoutObservableArray<Student>, e): void {
+        var orderProp = $(e.target).attr("data-column")
+        this.currentColumn(orderProp);
+        this.students.sort(function (left, right) {
+            var leftVal = left[orderProp];
+            var rightVal = right[orderProp];
+            if (StudentViewModel.sortType == "ascending") {
+                return leftVal < rightVal ? 1 : -1;
+            }
+            else {
+                return leftVal > rightVal ? 1 : -1;
+            }
+        });
+        // Смена иконки
+        StudentViewModel.sortType = (StudentViewModel.sortType == "ascending") ? "descending" : "ascending";
+        this.iconType((StudentViewModel.sortType == "ascending") ? "glyphicon glyphicon-chevron-up" : "glyphicon glyphicon-chevron-down");
+    };
 }
 
 $(document).ready(function () {
-    var serverData: any[];
-    serverData = JSON.parse($("#serverJSON").val());
+
     var ViewModel = {
-        Pagination: new Pagination(),
+        StudentViewModel: new StudentViewModel(),
         Student: new Student(null,'','','','')
     };
-    
-    var i: number;
-    for (i = 0; i < serverData.length; i++) {
-        var serverStudent: any;
-        serverStudent = serverData[i];
-        ViewModel.Pagination.students.push(new Student(serverStudent.Id, serverStudent.FirstName, serverStudent.LastName, serverStudent.Gender, serverStudent.Phone));
-    }
+    $.getJSON('/home/GetStudents', function (data) {
+        //$.each(data, function (key, value) {
+        //    ViewModel.StudentViewModel.students.push(new Student(value.Id, value.FirstName, value.LastName, value.Gender, value.Phone));
+        //});
+        ViewModel.StudentViewModel.students(data);
+    });
 
-    ViewModel.Pagination.currentPage = ko.computed(function () {
-        var pagesize = parseInt(ViewModel.Pagination.pageSize(),10),
-            startIndex = pagesize * ViewModel.Pagination.currentPageIndex(),
+    ViewModel.StudentViewModel.currentPage = ko.computed(function () {
+        var pagesize = parseInt(ViewModel.StudentViewModel.pageSize().toString(), 10),
+            startIndex = pagesize * ViewModel.StudentViewModel.currentPageIndex(),
             endIndex = startIndex + pagesize;
-        return ViewModel.Pagination.students.slice(startIndex, endIndex);
+        return ViewModel.StudentViewModel.students.slice(startIndex, endIndex);
     });
     ko.applyBindings(ViewModel);
 });
