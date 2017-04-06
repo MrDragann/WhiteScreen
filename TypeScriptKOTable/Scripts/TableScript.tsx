@@ -2,16 +2,32 @@
 ///<reference path="typings/knockout/knockout.d.ts" />
 
 $(document).ready(function () {
-
-    var ViewModel = {
-        ModelStudent: new ModelStudent(),
-        Paging: new Paging(),
-        StudentViewModel: new StudentViewModel(),
-        StudentAction: new StudentAction()
-    };
-
-    ko.applyBindings(ViewModel);
+    var viewModel = new TableModel();
+    ko.applyBindings(viewModel);
 });
+
+class TableModel {
+    ModelStudent = new ModelStudent();
+    Paging = new Paging();
+    SortCollection = new SortCollection();
+    StudentAction = new StudentAction();
+}
+/**
+ * Url для загрузки коллекции
+ */
+const GetCollectionUrl = "/home/GetStudents";
+/**
+ * Url добавления студента
+ */
+const AddStudentUrl = "/home/AddStudent";
+/**
+ * Url удаления студента
+ */
+const DeleteStudentUrl = "/home/DeleteStudent/";
+/**
+ * Url редактирования студента
+ */
+const EditStudentUrl = "/home/EditStudent";
 /**
  * Класс модели студента
  */
@@ -34,6 +50,28 @@ class ModelStudent {
  * Редактирование данных коллекции
  */
 class StudentAction {
+    readonlyTemplate: KnockoutObservable<any>;
+    editTemplate: KnockoutObservable<any>;
+    currentTemplate: any;
+    static resetTemplate: any;
+
+    currentData: any;
+
+    constructor() {
+        var _this = this;
+        this.readonlyTemplate = ko.observable("readonlyTemplate");
+        this.editTemplate = ko.observable();
+        // Смена шаблона редактирования
+        this.currentTemplate = function (tmpl) {
+            _this.currentData = tmpl;
+            return tmpl === _this.editTemplate() ? 'editTemplate' : _this.readonlyTemplate();
+        };
+        // Сброс шаблона на обычный
+        StudentAction.resetTemplate = function (t) {
+            _this.editTemplate("readonlyTemplate");
+        };
+    }
+
     /**
      * Добавление студента
      * @param student
@@ -42,7 +80,7 @@ class StudentAction {
         var dataObject = ko.toJSON(student.ModelStudent);
 
         $.ajax({
-            url: '/home/AddStudent',
+            url: AddStudentUrl,
             type: 'post',
             data: dataObject,
             contentType: 'application/json',
@@ -64,16 +102,13 @@ class StudentAction {
         var stud = student.Id;
         Paging.Collection.remove(student);
         $.ajax({
-            url: '/home/DeleteStudent/' + student.Id,
+            url: DeleteStudentUrl + student.Id,
             type: 'post',
             contentType: 'application/json',
             success: function () { 
             }
         });
     };
-    resetTemplate(): void {
-        StudentViewModel.resetTemplate();
-    }
     /**
      * Редактирование студента
      * @param data
@@ -88,22 +123,25 @@ class StudentAction {
         };
 
         $.ajax({
-            url: '/home/EditStudent',
+            url: EditStudentUrl,
             type: 'post',
             data: student,
             success: function (data) {
-                StudentViewModel.resetTemplate();
+                StudentAction.resetTemplate();
             },
             error: function (err) {
                 console.log(err);
             }
         });
     };
+    /**
+     * Сброс шаблона
+     */
+    resetTemplate(): void {
+
+        StudentAction.resetTemplate();
+    }
 }
-/**
- * Url для загрузки коллекции
- */
-const GetCollectionUrl = "/home/GetStudents";
 
 /**
  * Постраничный вывод
@@ -165,33 +203,18 @@ class Paging {
     };
 }
 /**
- * Сортировка коллекции
+ * Сортировка коллекцииStudentViewModel
  */
-class StudentViewModel {
+class SortCollection {
     static sortType: string;
     currentColumn: KnockoutObservable<string>;
     iconType: KnockoutObservable<string>;
-
-    readonlyTemplate: KnockoutObservable<any>;
-    editTemplate: KnockoutObservable<any>;
-    currentTemplate: any;
-    static resetTemplate: any;
-
+    
     constructor() {
         var _this = this;
-        StudentViewModel.sortType = "ascending";
+        SortCollection.sortType = "ascending";
         this.currentColumn = ko.observable("");
         this.iconType = ko.observable("");
-        this.readonlyTemplate = ko.observable("readonlyTemplate");
-        this.editTemplate = ko.observable();
-        // Смена шаблона редактирования
-        this.currentTemplate = function (tmpl) {
-            return tmpl === _this.editTemplate() ? 'editTemplate' : _this.readonlyTemplate();
-        };
-        // Сброс шаблона на обычный
-        StudentViewModel.resetTemplate = function (t) {
-            _this.editTemplate("readonlyTemplate");
-        };
     }
     /**
      * Сортировка
@@ -199,12 +222,13 @@ class StudentViewModel {
      * @param e
      */
     sortTable(students: KnockoutObservableArray<ModelStudent>, e): void {
-        var orderProp = $(e.target).attr("data-column")
+        var orderProp = $(e.target).attr("data-column");
+        if (orderProp == undefined) var orderPro = $(e.target).parent();
         this.currentColumn(orderProp);
         Paging.Collection.sort(function (left, right) {
             var leftVal = left[orderProp];
             var rightVal = right[orderProp];
-            if (StudentViewModel.sortType == "ascending") {
+            if (SortCollection.sortType == "ascending") {
                 return leftVal < rightVal ? 1 : -1;
             }
             else {
@@ -212,7 +236,42 @@ class StudentViewModel {
             }
         });
         // Смена иконки
-        StudentViewModel.sortType = (StudentViewModel.sortType == "ascending") ? "descending" : "ascending";
-        this.iconType((StudentViewModel.sortType == "ascending") ? "glyphicon glyphicon-chevron-up" : "glyphicon glyphicon-chevron-down");
+        SortCollection.sortType = (SortCollection.sortType == "ascending") ? "descending" : "ascending";
+        this.iconType((SortCollection.sortType == "ascending") ? "glyphicon glyphicon-chevron-up" : "glyphicon glyphicon-chevron-down");
     };
 }
+ko.components.register('AddStudent', {
+    viewModel: function (params) {
+        this.FirstName = params.ModelStudent.FirstName();
+        this.LastName = params.ModelStudent.LastName();
+        this.Gender = params.ModelStudent.Gender();
+        this.Phone = params.ModelStudent.Phone();
+    },
+    template: '<div class="form-group">'
+        +'<label for="inpFirstName">Имя</label>'
+        +'<input id="inpFirstName" type="text" class="form-control" data-bind="value: FirstName" />'
+    +'</div>'
+    +'<div class="form-group">'
+        +'<label for="inpLastName">Фамилия</label>'
+        +'<input id="inpLastName" type="text" class="form-control" data-bind="value: LastName" />'
+    +'</div>'
+    +'<div class="form-group">'
+        +'<label for="inpGender">Пол</label>'
+        +'<select id="inpGender" class="form-control" data-bind="value: Gender">'
+            +'<option value="Male">Мужчина</option>'
+            +'<option value="Female">Женщина</option>'
+            +'<option value="Other">Другой</option>'
+        +'</select>'
+    +'</div>'
+    +'<div class="form-group">'
+        +'<label for="txtPhone">Телефон</label>'
+        +'<input id="txtPhone" class="form-control" data-bind="value: Phone" />'
+    +'</div>'
+});
+ko.components.register('message-editor', {
+    viewModel: function(params) {
+        this.text = ko.observable(params && params.initialText || '');
+    },
+    template: '<input data-bind="value: text" /> '
+            + '<span data-bind="text: text().length"></span>'
+});

@@ -9,7 +9,7 @@
 </style>
 
 <table class="table table-striped table-bordered table-condensed">
-    <thead>
+    <thead data-bind="with: $root.StudentViewModel">
         <tr data-bind="click: sortTable">
             <th data-column="Id">
                 ID
