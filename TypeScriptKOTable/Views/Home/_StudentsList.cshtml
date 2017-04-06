@@ -46,10 +46,10 @@
         </tr>
     </thead>
 
-    <tbody data-bind="template: { name: currentTemplate, foreach: currentPage }">
+    <tbody data-bind="template: { name: currentTemplate, foreach: $root.Paging.currentPage }">
         
     </tbody>
-    <tfoot>
+    <tfoot data-bind="with: $root.Paging">
         <tr>
             <td colspan="7">
                 Отобразить на странице:
@@ -80,7 +80,7 @@
         <td data-bind="text: Gender"></td>
         <td data-bind="text: Phone"></td>
         <td><button type="button" class="btn btn-warning glyphicon glyphicon-pencil btn-sm" data-bind="click: $parent.editTemplate"></button></td>
-        <td><button type="button" class="btn btn-danger glyphicon glyphicon-trash btn-sm" data-bind="click: $root.StudentChanges.removeStudent"></button></td>
+        <td><button type="button" class="btn btn-danger glyphicon glyphicon-trash btn-sm" data-bind="click: $root.StudentAction.removeStudent"></button></td>
     </tr>
 </script>
 @* Шаблон редактирования *@
@@ -100,10 +100,10 @@
             <input type="text" data-bind="value: $data.Phone" class="form-control" />
         </td>
         <td>
-            <button type="button" class="btn btn-success glyphicon glyphicon-ok btn-sm" data-bind="click: $root.StudentChanges.saveChanges"></button>
+            <button type="button" class="btn btn-success glyphicon glyphicon-ok btn-sm" data-bind="click: $root.StudentAction.saveChanges"></button>
         </td>
         <td>
-            <button type="button" class="btn btn-danger glyphicon glyphicon-remove btn-sm" data-bind="click: $root.StudentChanges.resetTemplate"></button>
+            <button type="button" class="btn btn-danger glyphicon glyphicon-remove btn-sm" data-bind="click: $root.StudentAction.resetTemplate"></button>
         </td>
     </tr>
 </script>

@@ -1,7 +1,21 @@
 ﻿///<reference path="typings/jquery/jquery.d.ts" />
 ///<reference path="typings/knockout/knockout.d.ts" />
 
-class Student {
+$(document).ready(function () {
+
+    var ViewModel = {
+        ModelStudent: new ModelStudent(),
+        Paging: new Paging(),
+        StudentViewModel: new StudentViewModel(),
+        StudentAction: new StudentAction()
+    };
+
+    ko.applyBindings(ViewModel);
+});
+/**
+ * Класс модели студента
+ */
+class ModelStudent {
     Id: KnockoutObservable<number>;
     FirstName: KnockoutObservable<string>;
     LastName: KnockoutObservable<string>;
@@ -16,11 +30,16 @@ class Student {
         this.Phone = ko.observable(Phone);
     }
 }
-
-class StudentChanges {
-    // Добавление студента
+/**
+ * Редактирование данных коллекции
+ */
+class StudentAction {
+    /**
+     * Добавление студента
+     * @param student
+     */
     addStudent(student: any): void {
-        var dataObject = ko.toJSON(student.Student);
+        var dataObject = ko.toJSON(student.ModelStudent);
 
         $.ajax({
             url: '/home/AddStudent',
@@ -29,7 +48,7 @@ class StudentChanges {
             contentType: 'application/json',
             success: function (data) {
                 console.log(dataObject);
-                StudentViewModel.students.push(data);
+                Paging.Collection.push(data);
             },
             error: function () {
                 console.log(dataObject);
@@ -37,24 +56,29 @@ class StudentChanges {
         });
     };
 
-    // Удаление студента из списка
-    removeStudent(student: Student): void {
+    /**
+     * Удаление студента из списка
+     * @param student
+     */
+    removeStudent(student: ModelStudent): void {
         var stud = student.Id;
-        StudentViewModel.students.remove(student);
-        //$.ajax({
-        //    url: '/home/DeleteStudent/' + student.Id,
-        //    type: 'post',
-        //    contentType: 'application/json',
-        //    success: function () { 
-        //    }
-        //});
+        Paging.Collection.remove(student);
+        $.ajax({
+            url: '/home/DeleteStudent/' + student.Id,
+            type: 'post',
+            contentType: 'application/json',
+            success: function () { 
+            }
+        });
     };
     resetTemplate(): void {
         StudentViewModel.resetTemplate();
     }
-    // Редактирование студента
-    saveChanges = function (data) {
-
+    /**
+     * Редактирование студента
+     * @param data
+     */
+    saveChanges(data):void {
         var student = {
             Id: data.Id,
             FirstName: data.FirstName,
@@ -75,22 +99,75 @@ class StudentChanges {
             }
         });
     };
-    genders = [
-        "Male",
-        "Female",
-        "Other"
-    ];
 }
 /**
- * 
+ * Url для загрузки коллекции
  */
-class StudentViewModel {
-    public static students: KnockoutObservableArray<Student>;
+const GetCollectionUrl = "/home/GetStudents";
+
+/**
+ * Постраничный вывод
+ */
+class Paging {
+    public static Collection: KnockoutObservableArray<any>;
 
     currentPage: KnockoutObservable<any>;
     pageSize: KnockoutObservable<number>;
     currentPageIndex: KnockoutObservable<number>;
 
+    constructor() {
+        var _this = this;
+        Paging.Collection = ko.observableArray([]);
+        this.currentPage = ko.observableArray([]);
+        this.pageSize = ko.observable(5);
+        this.currentPageIndex = ko.observable(0);
+        this.getCollection();
+        this.currentPage = ko.computed(function () {
+            var pagesize = parseInt(_this.pageSize().toString(), 10),
+                startIndex = pagesize * _this.currentPageIndex(),
+                endIndex = startIndex + pagesize;
+            return Paging.Collection.slice(startIndex, endIndex);
+        });
+    }
+    /**
+     * Загрузка коллекции с сервера
+     */
+    getCollection(): void {
+        $.getJSON(GetCollectionUrl, function (data) {
+            //$.each(data, function (key, value) {
+            //    Paging.Collection.push(new ModelStudent(value.Id, value.FirstName, value.LastName, value.Gender, value.Phone));
+            //});
+            Paging.Collection(data);
+        });
+    }
+
+    /**
+     * Переход на следующую страницу
+     */
+    nextPage(): void {
+        if (((this.currentPageIndex() + 1) * this.pageSize()) < Paging.Collection().length) {
+            this.currentPageIndex(this.currentPageIndex() + 1);
+        }
+        else {
+            this.currentPageIndex(0);
+        }
+    };
+    /**
+     * Переход на страницу назад
+     */
+    previousPage(): void {
+        if (this.currentPageIndex() > 0) {
+            this.currentPageIndex(this.currentPageIndex() - 1);
+        }
+        else {
+            this.currentPageIndex((Math.ceil(Paging.Collection().length / this.pageSize())) - 1);
+        }
+    };
+}
+/**
+ * Сортировка коллекции
+ */
+class StudentViewModel {
     static sortType: string;
     currentColumn: KnockoutObservable<string>;
     iconType: KnockoutObservable<string>;
@@ -102,27 +179,11 @@ class StudentViewModel {
 
     constructor() {
         var _this = this;
-        this.currentPage = ko.observableArray([]);
-        this.pageSize = ko.observable(5);
-        this.currentPageIndex = ko.observable(0);
-        StudentViewModel.students = ko.observableArray([]);
         StudentViewModel.sortType = "ascending";
         this.currentColumn = ko.observable("");
         this.iconType = ko.observable("");
         this.readonlyTemplate = ko.observable("readonlyTemplate");
         this.editTemplate = ko.observable();
-        $.getJSON('/home/GetStudents', function (data) {
-            $.each(data, function (key, value) {
-                StudentViewModel.students.push(new Student(value.Id, value.FirstName, value.LastName, value.Gender, value.Phone));
-            });
-            //StudentViewModel.students(data);
-        });
-        this.currentPage = ko.computed(function () {
-            var pagesize = parseInt(_this.pageSize().toString(), 10),
-                startIndex = pagesize * _this.currentPageIndex(),
-                endIndex = startIndex + pagesize;
-            return StudentViewModel.students.slice(startIndex, endIndex);
-        });
         // Смена шаблона редактирования
         this.currentTemplate = function (tmpl) {
             return tmpl === _this.editTemplate() ? 'editTemplate' : _this.readonlyTemplate();
@@ -132,31 +193,15 @@ class StudentViewModel {
             _this.editTemplate("readonlyTemplate");
         };
     }
-
-    
-
-    nextPage(): void {
-        if (((this.currentPageIndex() + 1) * this.pageSize()) < StudentViewModel.students().length) {
-            this.currentPageIndex(this.currentPageIndex() + 1);
-        }
-        else {
-            this.currentPageIndex(0);
-        }
-    };
-    previousPage(): void {
-        if (this.currentPageIndex() > 0) {
-            this.currentPageIndex(this.currentPageIndex() - 1);
-        }
-        else {
-            this.currentPageIndex((Math.ceil(StudentViewModel.students().length / this.pageSize())) - 1);
-        }
-    };
-
-    // Сортировка
-    sortTable(students: KnockoutObservableArray<Student>, e): void {
+    /**
+     * Сортировка
+     * @param students
+     * @param e
+     */
+    sortTable(students: KnockoutObservableArray<ModelStudent>, e): void {
         var orderProp = $(e.target).attr("data-column")
         this.currentColumn(orderProp);
-        StudentViewModel.students.sort(function (left, right) {
+        Paging.Collection.sort(function (left, right) {
             var leftVal = left[orderProp];
             var rightVal = right[orderProp];
             if (StudentViewModel.sortType == "ascending") {
@@ -171,14 +216,3 @@ class StudentViewModel {
         this.iconType((StudentViewModel.sortType == "ascending") ? "glyphicon glyphicon-chevron-up" : "glyphicon glyphicon-chevron-down");
     };
 }
-
-$(document).ready(function () {
-
-    var ViewModel = {
-        StudentViewModel: new StudentViewModel(),
-        StudentChanges: new StudentChanges(),
-        Student: new Student()
-    };
-    
-    ko.applyBindings(ViewModel);
-});
