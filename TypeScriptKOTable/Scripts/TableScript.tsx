@@ -8,7 +8,7 @@ class Student {
     Gender: KnockoutObservable<string>;
     Phone: KnockoutObservable<string>;
     // constructor
-    constructor(Id: number, FirstName: string, LastName: string, Gender: string, Phone: string) {
+    constructor(Id?: number, FirstName?: string, LastName?: string, Gender?: string, Phone?: string) {
         this.Id = ko.observable(Id);
         this.FirstName = ko.observable(FirstName);
         this.LastName = ko.observable(LastName);
@@ -49,12 +49,41 @@ class StudentChanges {
         //    }
         //});
     };
+    resetTemplate(): void {
+        StudentViewModel.resetTemplate();
+    }
+    // Редактирование студента
+    saveChanges = function (data) {
+
+        var student = {
+            Id: data.Id,
+            FirstName: data.FirstName,
+            LastName: data.LastName,
+            Gender: data.Gender,
+            Phone: data.Phone
+        };
+
+        $.ajax({
+            url: '/home/EditStudent',
+            type: 'post',
+            data: student,
+            success: function (data) {
+                StudentViewModel.resetTemplate();
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    };
     genders = [
         "Male",
         "Female",
         "Other"
     ];
 }
+/**
+ * 
+ */
 class StudentViewModel {
     public static students: KnockoutObservableArray<Student>;
 
@@ -68,6 +97,8 @@ class StudentViewModel {
 
     readonlyTemplate: KnockoutObservable<any>;
     editTemplate: KnockoutObservable<any>;
+    currentTemplate: any;
+    static resetTemplate: any;
 
     constructor() {
         var _this = this;
@@ -92,27 +123,17 @@ class StudentViewModel {
                 endIndex = startIndex + pagesize;
             return StudentViewModel.students.slice(startIndex, endIndex);
         });
+        // Смена шаблона редактирования
+        this.currentTemplate = function (tmpl) {
+            return tmpl === _this.editTemplate() ? 'editTemplate' : _this.readonlyTemplate();
+        };
+        // Сброс шаблона на обычный
+        StudentViewModel.resetTemplate = function (t) {
+            _this.editTemplate("readonlyTemplate");
+        };
     }
-    
-    // Смена шаблона редактирования
-    //currentTemplate = function (tmpl) {
-    //    return tmpl === StudentViewModel.editTemplate() ? 'editTemplate' : StudentViewModel.readonlyTemplate();
-    //};
-    currentTemplate = function (tmpl) {
-        
-        if (tmpl === this.editTemplate()) {
-            return 'editTemplate';
-        }
-        else {
-            return this.readonlyTemplate()
-        }
-        //return tmpl === self.editTemplate() ? 'editTemplate' : self.readonlyTemplate();
-    };
 
-    // Сброс шаблона на обычный
-    resetTemplate = function (t) {
-        this.editTemplate("readonlyTemplate");
-    };
+    
 
     nextPage(): void {
         if (((this.currentPageIndex() + 1) * this.pageSize()) < StudentViewModel.students().length) {
@@ -156,7 +177,7 @@ $(document).ready(function () {
     var ViewModel = {
         StudentViewModel: new StudentViewModel(),
         StudentChanges: new StudentChanges(),
-        Student: new Student(null,'','','','')
+        Student: new Student()
     };
     
     ko.applyBindings(ViewModel);

@@ -100,10 +100,10 @@
             <input type="text" data-bind="value: $data.Phone" class="form-control" />
         </td>
         <td>
-            <button type="button" class="btn btn-success glyphicon glyphicon-ok btn-sm" data-bind="click: $parent.saveChanges"></button>
+            <button type="button" class="btn btn-success glyphicon glyphicon-ok btn-sm" data-bind="click: $root.StudentChanges.saveChanges"></button>
         </td>
         <td>
-            <button type="button" class="btn btn-danger glyphicon glyphicon-remove btn-sm" data-bind="click: $parent.resetTemplate"></button>
+            <button type="button" class="btn btn-danger glyphicon glyphicon-remove btn-sm" data-bind="click: $root.StudentChanges.resetTemplate"></button>
         </td>
     </tr>
 </script>

@@ -13,6 +13,27 @@ var Student = (function () {
 }());
 var StudentChanges = (function () {
     function StudentChanges() {
+        // Редактирование студента
+        this.saveChanges = function (data) {
+            var student = {
+                Id: data.Id,
+                FirstName: data.FirstName,
+                LastName: data.LastName,
+                Gender: data.Gender,
+                Phone: data.Phone
+            };
+            $.ajax({
+                url: '/home/EditStudent',
+                type: 'post',
+                data: student,
+                success: function (data) {
+                    StudentViewModel.resetTemplate();
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        };
         this.genders = [
             "Male",
             "Female",
@@ -50,27 +71,16 @@ var StudentChanges = (function () {
         //});
     };
     ;
+    StudentChanges.prototype.resetTemplate = function () {
+        StudentViewModel.resetTemplate();
+    };
     return StudentChanges;
 }());
+/**
+ *
+ */
 var StudentViewModel = (function () {
     function StudentViewModel() {
-        // Смена шаблона редактирования
-        //currentTemplate = function (tmpl) {
-        //    return tmpl === StudentViewModel.editTemplate() ? 'editTemplate' : StudentViewModel.readonlyTemplate();
-        //};
-        this.currentTemplate = function (tmpl) {
-            if (tmpl === this.editTemplate()) {
-                return 'editTemplate';
-            }
-            else {
-                return this.readonlyTemplate();
-            }
-            //return tmpl === self.editTemplate() ? 'editTemplate' : self.readonlyTemplate();
-        };
-        // Сброс шаблона на обычный
-        this.resetTemplate = function (t) {
-            this.editTemplate("readonlyTemplate");
-        };
         var _this = this;
         this.currentPage = ko.observableArray([]);
         this.pageSize = ko.observable(5);
@@ -91,6 +101,14 @@ var StudentViewModel = (function () {
             var pagesize = parseInt(_this.pageSize().toString(), 10), startIndex = pagesize * _this.currentPageIndex(), endIndex = startIndex + pagesize;
             return StudentViewModel.students.slice(startIndex, endIndex);
         });
+        // Смена шаблона редактирования
+        this.currentTemplate = function (tmpl) {
+            return tmpl === _this.editTemplate() ? 'editTemplate' : _this.readonlyTemplate();
+        };
+        // Сброс шаблона на обычный
+        StudentViewModel.resetTemplate = function (t) {
+            _this.editTemplate("readonlyTemplate");
+        };
     }
     StudentViewModel.prototype.nextPage = function () {
         if (((this.currentPageIndex() + 1) * this.pageSize()) < StudentViewModel.students().length) {
@@ -135,7 +153,7 @@ $(document).ready(function () {
     var ViewModel = {
         StudentViewModel: new StudentViewModel(),
         StudentChanges: new StudentChanges(),
-        Student: new Student(null, '', '', '', '')
+        Student: new Student()
     };
     ko.applyBindings(ViewModel);
 });
