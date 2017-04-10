@@ -44,10 +44,51 @@
     
 </div>
 <div data-bind='component: "message-editor"'></div>
+@*  Шаблон чтения *@
+<script type="text/html" id="readonlyTemplate">
+    <tr>
+        <td data-bind="text: Id"></td>
+        <td data-bind="text: FirstName"></td>
+        <td data-bind="text: LastName"></td>
+        <td data-bind="text: Gender"></td>
+        <td data-bind="text: Phone"></td>
+        <td><button type="button" class="btn btn-warning glyphicon glyphicon-pencil btn-sm" data-bind="click: $root.StudentAction.editTemplate"></button></td>
+        <td><button type="button" class="btn btn-danger glyphicon glyphicon-trash btn-sm" data-bind="click: $root.StudentAction.removeStudent"></button></td>
+    </tr>
+</script>
+@* Шаблон редактирования *@
+<script type="text/html" id="editTemplate">
+    <tr>
+        <td data-bind="text: $data.Id"></td>
+        <td>
+            <input type="text" data-bind="value: $data.FirstName" class="form-control" />
+        </td>
+        <td>
+            <input type="text" data-bind="value: $data.LastName" class="form-control" />
+        </td>
+        <td>
+            <input type="text" data-bind="value: $data.Gender" class="form-control" />
+        </td>
+        <td>
+            <input type="text" data-bind="value: $data.Phone" class="form-control" />
+        </td>
+        <td>
+            <button type="button" class="btn btn-success glyphicon glyphicon-ok btn-sm" data-bind="click: $root.StudentAction.saveChanges"></button>
+        </td>
+        <td>
+            <button type="button" class="btn btn-danger glyphicon glyphicon-remove btn-sm" data-bind="click: $root.StudentAction.resetTemplate"></button>
+        </td>
+    </tr>
+</script>
 @section Scripts{
     @*<script src="~/Scripts/config.js"></script>
     <script data-main="/Scripts/loader.js" src="~/Scripts/require.js"></script>*@
     <script src="~/Scripts/knockout-3.4.2.js"></script>
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
     <script src="~/Scripts/TableScript.js"></script>
+    <script src="~/Scripts/require.js"></script>
+    <script src="~/Scripts/require/config.js"></script>
+    <script>
+        require(["jquery", "bootstrap"]);
+    </script>
 }

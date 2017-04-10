@@ -105,7 +105,7 @@ class StudentAction {
             url: DeleteStudentUrl + student.Id,
             type: 'post',
             contentType: 'application/json',
-            success: function () { 
+            success: function () {
             }
         });
     };
@@ -113,7 +113,7 @@ class StudentAction {
      * Редактирование студента
      * @param data
      */
-    saveChanges(data):void {
+    saveChanges(data): void {
         var student = {
             Id: data.Id,
             FirstName: data.FirstName,
@@ -203,13 +203,13 @@ class Paging {
     };
 }
 /**
- * Сортировка коллекцииStudentViewModel
+ * Сортировка столбца таблицы
  */
 class SortCollection {
     static sortType: string;
     currentColumn: KnockoutObservable<string>;
     iconType: KnockoutObservable<string>;
-    
+
     constructor() {
         var _this = this;
         SortCollection.sortType = "ascending";
@@ -218,10 +218,10 @@ class SortCollection {
     }
     /**
      * Сортировка
-     * @param students
+     * @param collection
      * @param e
      */
-    sortTable(students: KnockoutObservableArray<ModelStudent>, e): void {
+    sortTable(collection: KnockoutObservableArray<any>, e): void {
         var orderProp = $(e.target).attr("data-column");
         if (orderProp == undefined) var orderPro = $(e.target).parent();
         this.currentColumn(orderProp);
@@ -247,33 +247,79 @@ ko.components.register('AddStudent', {
         this.ModelStudent = this.viewModel.ModelStudent;
     },
     template: '<form role="form" data-bind="with: ModelStudent">'
-    +'<div class="form-group">'
-        +'<label for="inpFirstName">Имя</label>'
-        +'<input id="inpFirstName" type="text" class="form-control" data-bind="value: FirstName" />'
-    +'</div>'
-    +'<div class="form-group">'
-        +'<label for="inpLastName">Фамилия</label>'
-        +'<input id="inpLastName" type="text" class="form-control" data-bind="value: LastName" />'
-    +'</div>'
-    +'<div class="form-group">'
-        +'<label for="inpGender">Пол</label>'
-        +'<select id="inpGender" class="form-control" data-bind="value: Gender">'
-            +'<option value="Male">Мужчина</option>'
-            +'<option value="Female">Женщина</option>'
-            +'<option value="Other">Другой</option>'
-        +'</select>'
-    +'</div>'
-    +'<div class="form-group">'
-        +'<label for="txtPhone">Телефон</label>'
-        +'<input id="txtPhone" class="form-control" data-bind="value: Phone" />'
+    + '<div class="form-group">'
+    + '<label for="inpFirstName">Имя</label>'
+    + '<input id="inpFirstName" type="text" class="form-control" data-bind="value: FirstName" />'
+    + '</div>'
+    + '<div class="form-group">'
+    + '<label for="inpLastName">Фамилия</label>'
+    + '<input id="inpLastName" type="text" class="form-control" data-bind="value: LastName" />'
+    + '</div>'
+    + '<div class="form-group">'
+    + '<label for="inpGender">Пол</label>'
+    + '<select id="inpGender" class="form-control" data-bind="value: Gender">'
+    + '<option value="Male">Мужчина</option>'
+    + '<option value="Female">Женщина</option>'
+    + '<option value="Other">Другой</option>'
+    + '</select>'
+    + '</div>'
+    + '<div class="form-group">'
+    + '<label for="txtPhone">Телефон</label>'
+    + '<input id="txtPhone" class="form-control" data-bind="value: Phone" />'
     + '</div>'
     + '</form>'
-    +'<input type="button" id="btnAddStudent" class="btn btn-primary" value="Добавить" data-bind="click: $root.StudentAction.addStudent" />'
+    + '<input type="button" id="btnAddStudent" class="btn btn-primary" value="Добавить" data-bind="click: $root.StudentAction.addStudent" />'
+});
+
+ko.components.register('Table', {
+    viewModel: function (params) {
+        this.viewModel = params.$root;
+        this.SortCollection = this.viewModel.SortCollection;
+    },
+    template: '<thead data-bind="with: SortCollection">'
+    + '<tr data-bind="click: sortTable">'
+    + '<th data-column="Id">ID'
+    + '<span data-bind="attr: { class: currentColumn() == "Id" ? "isVisible" : "isHidden" }">'
+    + '<i data-bind="attr: { class: iconType }"></i></span></th>'
+    + '<th data-column="FirstName">Имя'
+    + '<span data-bind="attr: { class: currentColumn() == "FirstName" ? "isVisible" : "isHidden" }">'
+    + '<i data-bind="attr: { class: iconType }"></i></span></th>'
+    + '<th data-column="LastName">Фамилия'
+    + '<span data-bind="attr: { class: currentColumn() == "LastName" ? "isVisible" : "isHidden" }">'
+    + '<i data-bind="attr: { class: iconType }"></i></span></th>'
+    + '<th data-column="Gender">Пол'
+    + '<span data-bind="attr: { class: currentColumn() == "Gender" ? "isVisible" : "isHidden" }">'
+    + '<i data-bind="attr: { class: iconType }"></i></span></th>'
+    + '<th data-column="Phone">Телефон'
+    + '<span data-bind="attr: { class: currentColumn() == "Phone" ? "isVisible" : "isHidden" }">'
+    + '<i data-bind="attr: { class: iconType }"></i></span></th>'
+    + '<th></th><th></th></tr></thead>'
+    + '<tbody data-bind="template: { name: $root.StudentAction.currentTemplate, foreach: $root.Paging.currentPage }"></tbody>'
+});
+
+ko.components.register('Paging', {
+    viewModel: function (params) {
+        this.viewModel = params.$root;
+        this.Paging = this.viewModel.Paging;
+    },
+    template: '<div data-bind="with: Paging">'
+    + '<span style="padding-left:15px;">Отобразить на странице: </span>'
+    + '<select id="pageSizeSelector" data-bind="value: pageSize">'
+    + '<option value="5">5</option>'
+    + '<option value="10">10</option>'
+    + '<option value="15">15</option>'
+    + '<option value="20">20</option>'
+    + '<option value="25">25</option>'
+    + '<option value="30">30</option></select>'
+    + '<span style="padding-left:20px;">'
+    + '<button data-bind="click: previousPage($data)" class="btn btn-sm"><i class="glyphicon glyphicon-step-backward"></i></button>'
+    + '&nbsp;Страница&nbsp;<label data-bind="text: currentPageIndex() + 1" class="badge"></label>&nbsp;'
+    + '<button data-bind="click: nextPage($data)" class="btn btn-sm"><i class="glyphicon glyphicon-step-forward"></i></button></span></div>'
 });
 ko.components.register('message-editor', {
-    viewModel: function(params) {
+    viewModel: function (params) {
         this.text = ko.observable(params && params.initialText || '');
     },
     template: '<input data-bind="value: text" /> '
-            + '<span data-bind="text: text().length"></span>'
+    + '<span data-bind="text: text().length"></span>'
 });

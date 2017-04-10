@@ -185,7 +185,7 @@ var Paging = (function () {
     return Paging;
 }());
 /**
- * Сортировка коллекцииStudentViewModel
+ * Сортировка столбца таблицы
  */
 var SortCollection = (function () {
     function SortCollection() {
@@ -196,10 +196,10 @@ var SortCollection = (function () {
     }
     /**
      * Сортировка
-     * @param students
+     * @param collection
      * @param e
      */
-    SortCollection.prototype.sortTable = function (students, e) {
+    SortCollection.prototype.sortTable = function (collection, e) {
         var orderProp = $(e.target).attr("data-column");
         if (orderProp == undefined)
             var orderPro = $(e.target).parent();
@@ -250,6 +250,50 @@ ko.components.register('AddStudent', {
         + '</form>'
         + '<input type="button" id="btnAddStudent" class="btn btn-primary" value="Добавить" data-bind="click: $root.StudentAction.addStudent" />'
 });
+ko.components.register('Table', {
+    viewModel: function (params) {
+        this.viewModel = params.$root;
+        this.SortCollection = this.viewModel.SortCollection;
+    },
+    template: '<thead data-bind="with: SortCollection">'
+        + '<tr data-bind="click: sortTable">'
+        + '<th data-column="Id">ID'
+        + '<span data-bind="attr: { class: currentColumn() == "Id" ? "isVisible" : "isHidden" }">'
+        + '<i data-bind="attr: { class: iconType }"></i></span></th>'
+        + '<th data-column="FirstName">Имя'
+        + '<span data-bind="attr: { class: currentColumn() == "FirstName" ? "isVisible" : "isHidden" }">'
+        + '<i data-bind="attr: { class: iconType }"></i></span></th>'
+        + '<th data-column="LastName">Фамилия'
+        + '<span data-bind="attr: { class: currentColumn() == "LastName" ? "isVisible" : "isHidden" }">'
+        + '<i data-bind="attr: { class: iconType }"></i></span></th>'
+        + '<th data-column="Gender">Пол'
+        + '<span data-bind="attr: { class: currentColumn() == "Gender" ? "isVisible" : "isHidden" }">'
+        + '<i data-bind="attr: { class: iconType }"></i></span></th>'
+        + '<th data-column="Phone">Телефон'
+        + '<span data-bind="attr: { class: currentColumn() == "Phone" ? "isVisible" : "isHidden" }">'
+        + '<i data-bind="attr: { class: iconType }"></i></span></th>'
+        + '<th></th><th></th></tr></thead>'
+        + '<tbody data-bind="template: { name: $root.StudentAction.currentTemplate, foreach: $root.Paging.currentPage }"></tbody>'
+});
+ko.components.register('Paging', {
+    viewModel: function (params) {
+        this.viewModel = params.$root;
+        this.Paging = this.viewModel.Paging;
+    },
+    template: '<div data-bind="with: Paging">'
+        + '<span style="padding-left:15px;">Отобразить на странице: </span>'
+        + '<select id="pageSizeSelector" data-bind="value: pageSize">'
+        + '<option value="5">5</option>'
+        + '<option value="10">10</option>'
+        + '<option value="15">15</option>'
+        + '<option value="20">20</option>'
+        + '<option value="25">25</option>'
+        + '<option value="30">30</option></select>'
+        + '<span style="padding-left:20px;">'
+        + '<button data-bind="click: previousPage($data)" class="btn btn-sm"><i class="glyphicon glyphicon-step-backward"></i></button>'
+        + '&nbsp;Страница&nbsp;<label data-bind="text: currentPageIndex() + 1" class="badge"></label>&nbsp;'
+        + '<button data-bind="click: nextPage($data)" class="btn btn-sm"><i class="glyphicon glyphicon-step-forward"></i></button></span></div>'
+});
 ko.components.register('message-editor', {
     viewModel: function (params) {
         this.text = ko.observable(params && params.initialText || '');
@@ -257,3 +301,4 @@ ko.components.register('message-editor', {
     template: '<input data-bind="value: text" /> '
         + '<span data-bind="text: text().length"></span>'
 });
+//# sourceMappingURL=TableScript.js.map

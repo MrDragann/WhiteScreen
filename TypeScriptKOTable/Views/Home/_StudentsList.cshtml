@@ -1,5 +1,5 @@
-﻿<table class="table table-striped table-bordered table-condensed">
-    <thead data-bind="with: $root.SortCollection">
+﻿<table class="table table-striped table-bordered table-condensed" data-bind='component: { name: "Table", params: {  $root }}'>
+    <!--<thead data-bind="with: $root.SortCollection">
         <tr data-bind="click: sortTable">
             <th data-column="Id">
                 ID
@@ -38,62 +38,25 @@
 
     <tbody data-bind="template: { name: currentTemplate, foreach: $root.Paging.currentPage }">
         
-    </tbody>
-    <tfoot data-bind="with: $root.Paging">
-        <tr>
-            <td colspan="7">
-                Отобразить на странице:
-                <select id="pageSizeSelector" data-bind="value: pageSize">
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                    <option value="15">15</option>
-                    <option value="20">20</option>
-                    <option value="25">25</option>
-                    <option value="30">30</option>
-                </select>
-                <span style="padding-left:20px;">
-                    <button data-bind="click: previousPage($data)" class="btn btn-sm"><i class="glyphicon glyphicon-step-backward"></i></button>
-                    Страница&nbsp;<label data-bind="text: currentPageIndex() + 1" class="badge"></label>
-                    <button data-bind="click: nextPage($data)" class="btn btn-sm"><i class="glyphicon glyphicon-step-forward"></i></button>
-                </span>
-            </td>
-        </tr>
-    </tfoot>
+    </tbody>-->
 </table>
+<div class="row" data-bind='component: { name: "Paging", params: {  $root }}'></div>
+<!--
+<div data-bind="with: Paging">
+    <span style="padding-left:15px;">Отобразить на странице:</span>
+    <select id="pageSizeSelector" data-bind="value: pageSize">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="15">15</option>
+        <option value="20">20</option>
+        <option value="25">25</option>
+        <option value="30">30</option>
+    </select>
+    <span style="padding-left:20px;">
+        <button data-bind="click: previousPage($data)" class="btn btn-sm"><i class="glyphicon glyphicon-step-backward"></i></button>
+        Страница&nbsp;<label data-bind="text: currentPageIndex() + 1" class="badge"></label>
+        <button data-bind="click: nextPage($data)" class="btn btn-sm"><i class="glyphicon glyphicon-step-forward"></i></button>
+    </span>
+</div>
+    -->
 
-@*  Шаблон чтения *@
-<script type="text/html" id="readonlyTemplate">
-    <tr>
-        <td data-bind="text: Id"></td>
-        <td data-bind="text: FirstName"></td>
-        <td data-bind="text: LastName"></td>
-        <td data-bind="text: Gender"></td>
-        <td data-bind="text: Phone"></td>
-        <td><button type="button" class="btn btn-warning glyphicon glyphicon-pencil btn-sm" data-bind="click: $parent.editTemplate"></button></td>
-        <td><button type="button" class="btn btn-danger glyphicon glyphicon-trash btn-sm" data-bind="click: $root.StudentAction.removeStudent"></button></td>
-    </tr>
-</script>
-@* Шаблон редактирования *@
-<script type="text/html" id="editTemplate">
-    <tr>
-        <td data-bind="text: $data.Id"></td>
-        <td>
-            <input type="text" data-bind="value: $data.FirstName" class="form-control" />
-        </td>
-        <td>
-            <input type="text" data-bind="value: $data.LastName" class="form-control" />
-        </td>
-        <td>
-            <input type="text" data-bind="value: $data.Gender" class="form-control" />
-        </td>
-        <td>
-            <input type="text" data-bind="value: $data.Phone" class="form-control" />
-        </td>
-        <td>
-            <button type="button" class="btn btn-success glyphicon glyphicon-ok btn-sm" data-bind="click: $root.StudentAction.saveChanges"></button>
-        </td>
-        <td>
-            <button type="button" class="btn btn-danger glyphicon glyphicon-remove btn-sm" data-bind="click: $root.StudentAction.resetTemplate"></button>
-        </td>
-    </tr>
-</script>
