@@ -1,5 +1,4 @@
-﻿<div data-bind='component: { name: "AddStudent", params: {  ModelStudent }}'></div>
-@*<form role="form" data-bind='component: { name: "AddStudent", params: {  ModelStudent }}'>
+﻿<form role="form" @*data-bind='component: { name: "AddStudent", params: {  ModelStudent }}'*@>
         <div class="form-group">
             <label for="inpFirstName">Имя</label>
             <input id="inpFirstName" type="text" class="form-control" data-bind="value: ModelStudent.FirstName" />
@@ -20,5 +19,5 @@
             <label for="txtPhone">Телефон</label>
             <input id="txtPhone" class="form-control" data-bind="value: ModelStudent.Phone" />
         </div>
-    </form>*@
+    </form>
 <input type="button" id="btnAddStudent" class="btn btn-primary" value="Добавить" data-bind="click: StudentAction.addStudent" />

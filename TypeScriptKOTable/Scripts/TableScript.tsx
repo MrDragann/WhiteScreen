@@ -235,6 +235,7 @@ class SortCollection {
                 return leftVal > rightVal ? 1 : -1;
             }
         });
+
         // Смена иконки
         SortCollection.sortType = (SortCollection.sortType == "ascending") ? "descending" : "ascending";
         this.iconType((SortCollection.sortType == "ascending") ? "glyphicon glyphicon-chevron-up" : "glyphicon glyphicon-chevron-down");
@@ -242,12 +243,11 @@ class SortCollection {
 }
 ko.components.register('AddStudent', {
     viewModel: function (params) {
-        this.FirstName = params.ModelStudent.FirstName();
-        this.LastName = params.ModelStudent.LastName();
-        this.Gender = params.ModelStudent.Gender();
-        this.Phone = params.ModelStudent.Phone();
+        this.viewModel = params.$root;
+        this.ModelStudent = this.viewModel.ModelStudent;
     },
-    template: '<div class="form-group">'
+    template: '<form role="form" data-bind="with: ModelStudent">'
+    +'<div class="form-group">'
         +'<label for="inpFirstName">Имя</label>'
         +'<input id="inpFirstName" type="text" class="form-control" data-bind="value: FirstName" />'
     +'</div>'
@@ -266,7 +266,9 @@ ko.components.register('AddStudent', {
     +'<div class="form-group">'
         +'<label for="txtPhone">Телефон</label>'
         +'<input id="txtPhone" class="form-control" data-bind="value: Phone" />'
-    +'</div>'
+    + '</div>'
+    + '</form>'
+    +'<input type="button" id="btnAddStudent" class="btn btn-primary" value="Добавить" data-bind="click: $root.StudentAction.addStudent" />'
 });
 ko.components.register('message-editor', {
     viewModel: function(params) {
