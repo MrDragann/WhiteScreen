@@ -10,7 +10,7 @@ define(["require", "exports", "components/AddStudent/add-student-register"], fun
         };
         ko.applyBindings(viewModel);
     });
-    var tmp = AddStudent;
+    var addStudent = AddStudent;
     var TableModel = (function () {
         function TableModel() {
             //ModelStudent = new ModelStudent();

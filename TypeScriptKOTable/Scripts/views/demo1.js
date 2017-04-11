@@ -1,9 +1,8 @@
-define(["require", "exports", "knockout", "components/click-to-edit-register", "components/AddStudent/add-student-register"], function (require, exports, ko, clickToEdit, AddStudent) {
+define(["require", "exports", "knockout", "components/click-to-edit-register"], function (require, exports, ko, clickToEdit) {
     "use strict";
     // dummy line: ensures the click-to-edit component is 'referenced' otherwise
     // the compiler removes it from the list of components
-    var tmp = clickToEdit;
-    var tmp1 = AddStudent;
+    var clToEdit = clickToEdit;
     var Demo1ViewModel = (function () {
         function Demo1ViewModel() {
             this.FirstName = ko.observable();

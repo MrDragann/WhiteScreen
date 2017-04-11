@@ -6,10 +6,7 @@ import clickToEdit = require("components/click-to-edit-register");
 
 // dummy line: ensures the click-to-edit component is 'referenced' otherwise
 // the compiler removes it from the list of components
-var tmp = clickToEdit;
-import AddStudent = require("components/AddStudent/add-student-register");
-
-var tmp1 = AddStudent;
+var clToEdit = clickToEdit;
 export class Demo1ViewModel {
     FirstName = ko.observable<string>();
 

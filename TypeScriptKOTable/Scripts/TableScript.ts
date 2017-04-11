@@ -11,7 +11,7 @@ $(document).ready(function () {
 });
 import AddStudent = require("components/AddStudent/add-student-register");
 
-var tmp = AddStudent;
+var addStudent = AddStudent;
 
 export class TableModel {
     //ModelStudent = new ModelStudent();
