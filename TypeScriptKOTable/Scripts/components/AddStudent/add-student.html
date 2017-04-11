@@ -1,4 +1,4 @@
-﻿<!-- HTML template for component -->
+﻿<!-- HTML template for component 
 <span data-bind="visible: viewMode, click: Edit">
     <span data-bind="text: value"></span>
     &nbsp;&nbsp;<small class="text-muted">[click to edit]</small>
@@ -8,3 +8,27 @@
     <button class="btn btn-sm btn-primary" data-bind="click: Save">save</button>
     <button class="btn btn-default" data-bind="click: Cancel">cancel</button>
 </span>
+    -->
+<form role="form" data-bind='with: ModelStudent'>
+    <div class="form-group">
+        <label for="inpFirstName">Имя</label>
+        <input id="inpFirstName" type="text" class="form-control" data-bind="value: FirstName" />
+    </div>
+    <div class="form-group">
+        <label for="inpLastName">Фамилия</label>
+        <input id="inpLastName" type="text" class="form-control" data-bind="value: LastName" />
+    </div>
+    <div class="form-group">
+        <label for="inpGender">Пол</label>
+        <select id="inpGender" class="form-control" data-bind="value: Gender">
+            <option value="Male">Мужчина</option>
+            <option value="Female">Женщина</option>
+            <option value="Other">Другой</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="txtPhone">Телефон</label>
+        <input id="txtPhone" class="form-control" data-bind="value: Phone" />
+    </div>
+</form>
+<input type="button" id="btnAddStudent" class="btn btn-primary" value="Добавить" data-bind="click: $root.StudentAction.addStudent" />

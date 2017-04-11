@@ -3,52 +3,54 @@
     loaded for the click-to-edit viewmodel
  */
 import ko = require("knockout");
-module TestVM {
+module ViewModel {
     export interface clickToEditParams {
         value: KnockoutObservable<string>;
     }
 
-    export class ClickToEditViewModel {
-        // true if in view-mode, not edit-mode
-        viewMode = ko.observable(true);
-
-        // the value we show/edit
-        value: KnockoutObservable<string>;
-
-        // value for editing
-        newValue = ko.observable<string>();
-
-        // swith to edit mode
-        Edit() {
-            // copy the current value
-            this.newValue(this.value());
-            // change modes
-            this.viewMode(false);
+    export class AddStudent {
+        Id: KnockoutObservable<number>;
+        FirstName: KnockoutObservable<string>;
+        LastName: KnockoutObservable<string>;
+        Gender: KnockoutObservable<string>;
+        Phone: KnockoutObservable<string>;
+        // constructor
+        constructor(Id?: number, FirstName?: string, LastName?: string, Gender?: string, Phone?: string) {
+            this.Id = ko.observable(Id);
+            this.FirstName = ko.observable(FirstName);
+            this.LastName = ko.observable(LastName);
+            this.Gender = ko.observable(Gender);
+            this.Phone = ko.observable(Phone);
         }
+        /**
+ * Добавление студента
+ * @param student
+ */
+        addStudent(student: any): void {
+            var dataObject = ko.toJSON(student.ModelStudent);
 
-        Save() {
-            // copy value back
-            this.value(this.newValue());
-            // change to view mode
-            this.viewMode(true);
-        }
+            $.ajax({
+                url: AddStudentUrl,
+                type: 'post',
+                data: dataObject,
+                contentType: 'application/json',
+                success: function (data) {
+                    console.log(dataObject);
+                    //Paging.Collection.push(data);
+                },
+                error: function () {
+                    console.log(dataObject);
+                }
+            });
+        };
 
-        Cancel() {
-            // don't save changes, revert to view mode
-            this.viewMode(true);
-        }
-
-        constructor(params: clickToEditParams) {
-            if (params && params.value) {
-                // copy value observable into our value
-                this.value = params.value;
-            } else {
-                // no observable passed!
-                this.value = ko.observable("Error: no observable passed");
-            }
-        }
     }
+
 }
-export = TestVM;
+export = ViewModel;
 // return the 'class' which is the constructor function
 //return ClickToEditViewModel;
+/**
+ * Url добавления студента
+ */
+const AddStudentUrl = "/home/AddStudent";

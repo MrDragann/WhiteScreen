@@ -5,9 +5,12 @@ $(document).ready(function () {
     var viewModel = new TableModel();
     ko.applyBindings(viewModel);
 });
+import AddStudent = require("components/AddStudent/add-student");
+
+var tmp = AddStudent;
 
 class TableModel {
-    ModelStudent = new ModelStudent();
+    //ModelStudent = new ModelStudent();
     Paging = new Paging();
     SortCollection = new SortCollection();
     StudentAction = new StudentAction();
@@ -16,10 +19,6 @@ class TableModel {
  * Url для загрузки коллекции
  */
 const GetCollectionUrl = "/home/GetStudents";
-/**
- * Url добавления студента
- */
-const AddStudentUrl = "/home/AddStudent";
 /**
  * Url удаления студента
  */
@@ -72,42 +71,41 @@ class StudentAction {
         };
     }
 
-    /**
-     * Добавление студента
-     * @param student
-     */
-    addStudent(student: any): void {
-        var dataObject = ko.toJSON(student.ModelStudent);
+    ///**
+    // * Добавление студента
+    // * @param student
+    // */
+    //addStudent(student: any): void {
+    //    var dataObject = ko.toJSON(student.ModelStudent);
 
-        $.ajax({
-            url: AddStudentUrl,
-            type: 'post',
-            data: dataObject,
-            contentType: 'application/json',
-            success: function (data) {
-                console.log(dataObject);
-                Paging.Collection.push(data);
-            },
-            error: function () {
-                console.log(dataObject);
-            }
-        });
-    };
+    //    $.ajax({
+    //        url: AddStudentUrl,
+    //        type: 'post',
+    //        data: dataObject,
+    //        contentType: 'application/json',
+    //        success: function (data) {
+    //            console.log(dataObject);
+    //            Paging.Collection.push(data);
+    //        },
+    //        error: function () {
+    //            console.log(dataObject);
+    //        }
+    //    });
+    //};
 
     /**
      * Удаление студента из списка
      * @param student
      */
-    removeStudent(student: ModelStudent): void {
-        var stud = student.Id;
+    removeStudent(student: any): void {
         Paging.Collection.remove(student);
-        $.ajax({
-            url: DeleteStudentUrl + student.Id,
-            type: 'post',
-            contentType: 'application/json',
-            success: function () {
-            }
-        });
+        //$.ajax({
+        //    url: DeleteStudentUrl + student.Id,
+        //    type: 'post',
+        //    contentType: 'application/json',
+        //    success: function () {
+        //    }
+        //});
     };
     /**
      * Редактирование студента
@@ -241,35 +239,35 @@ class SortCollection {
         this.iconType((SortCollection.sortType == "ascending") ? "glyphicon glyphicon-chevron-up" : "glyphicon glyphicon-chevron-down");
     };
 }
-ko.components.register('AddStudent', {
-    viewModel: function (params) {
-        this.viewModel = params.$root;
-        this.ModelStudent = this.viewModel.ModelStudent;
-    },
-    template: '<form role="form" data-bind="with: ModelStudent">'
-    + '<div class="form-group">'
-    + '<label for="inpFirstName">Имя</label>'
-    + '<input id="inpFirstName" type="text" class="form-control" data-bind="value: FirstName" />'
-    + '</div>'
-    + '<div class="form-group">'
-    + '<label for="inpLastName">Фамилия</label>'
-    + '<input id="inpLastName" type="text" class="form-control" data-bind="value: LastName" />'
-    + '</div>'
-    + '<div class="form-group">'
-    + '<label for="inpGender">Пол</label>'
-    + '<select id="inpGender" class="form-control" data-bind="value: Gender">'
-    + '<option value="Male">Мужчина</option>'
-    + '<option value="Female">Женщина</option>'
-    + '<option value="Other">Другой</option>'
-    + '</select>'
-    + '</div>'
-    + '<div class="form-group">'
-    + '<label for="txtPhone">Телефон</label>'
-    + '<input id="txtPhone" class="form-control" data-bind="value: Phone" />'
-    + '</div>'
-    + '</form>'
-    + '<input type="button" id="btnAddStudent" class="btn btn-primary" value="Добавить" data-bind="click: $root.StudentAction.addStudent" />'
-});
+//ko.components.register('AddStudent', {
+//    viewModel: function (params) {
+//        this.viewModel = params.$root;
+//        this.ModelStudent = this.viewModel.ModelStudent;
+//    },
+//    template: '<form role="form" data-bind="with: ModelStudent">'
+//    + '<div class="form-group">'
+//    + '<label for="inpFirstName">Имя</label>'
+//    + '<input id="inpFirstName" type="text" class="form-control" data-bind="value: FirstName" />'
+//    + '</div>'
+//    + '<div class="form-group">'
+//    + '<label for="inpLastName">Фамилия</label>'
+//    + '<input id="inpLastName" type="text" class="form-control" data-bind="value: LastName" />'
+//    + '</div>'
+//    + '<div class="form-group">'
+//    + '<label for="inpGender">Пол</label>'
+//    + '<select id="inpGender" class="form-control" data-bind="value: Gender">'
+//    + '<option value="Male">Мужчина</option>'
+//    + '<option value="Female">Женщина</option>'
+//    + '<option value="Other">Другой</option>'
+//    + '</select>'
+//    + '</div>'
+//    + '<div class="form-group">'
+//    + '<label for="txtPhone">Телефон</label>'
+//    + '<input id="txtPhone" class="form-control" data-bind="value: Phone" />'
+//    + '</div>'
+//    + '</form>'
+//    + '<input type="button" id="btnAddStudent" class="btn btn-primary" value="Добавить" data-bind="click: $root.StudentAction.addStudent" />'
+//});
 
 ko.components.register('Table', {
     viewModel: function (params) {
