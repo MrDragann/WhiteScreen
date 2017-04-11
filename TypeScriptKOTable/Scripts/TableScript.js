@@ -1,11 +1,12 @@
+///<reference path="typings/jquery/jquery.d.ts" />
+///<reference path="typings/knockout/knockout.d.ts" />
 define(["require", "exports", 'components/Paging-table/paging-table', "components/AddStudent/add-student-register", "components/Paging-table/paging-table-register"], function (require, exports, paging, AddStudent, PagingTable) {
     "use strict";
     var addStudent = AddStudent;
     var pagingTable = PagingTable;
     exports.viewModel = {
         Paging: new paging.Paging(),
-        SortCollection: new paging.SortCollection(),
-        StudentAction: new StudentAction
+        SortCollection: new paging.SortCollection()
     };
     ko.applyBindings(exports.viewModel);
     var TableModel = (function () {

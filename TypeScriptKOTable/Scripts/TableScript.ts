@@ -11,8 +11,7 @@ var pagingTable = PagingTable;
 
 export var viewModel = {
         Paging: new paging.Paging(),
-        SortCollection: new paging.SortCollection(),
-        StudentAction: new StudentAction
+        SortCollection: new paging.SortCollection()
     };
     ko.applyBindings(viewModel);
 
