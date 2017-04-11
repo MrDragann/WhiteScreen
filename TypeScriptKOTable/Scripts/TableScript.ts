@@ -1,28 +1,26 @@
 ﻿///<reference path="typings/jquery/jquery.d.ts" />
 ///<reference path="typings/knockout/knockout.d.ts" />
+import paging = require('components/Paging-table/paging-table');
 
-$(document).ready(function () {
-    var viewModel = {
-        Paging: new Paging(),
-        SortCollection: new SortCollection(),
-        StudentAction: new StudentAction()
+import AddStudent = require("components/AddStudent/add-student-register");
+var addStudent = AddStudent;
+
+import PagingTable = require("components/Paging-table/paging-table-register");
+var pagingTable = PagingTable;
+
+export var viewModel = {
+        Paging: new paging.Paging(),
+        SortCollection: new paging.SortCollection(),
+        StudentAction: new StudentAction
     };
     ko.applyBindings(viewModel);
-});
-import AddStudent = require("components/AddStudent/add-student-register");
-
-var addStudent = AddStudent;
 
 export class TableModel {
     //ModelStudent = new ModelStudent();
-    Paging = new Paging();
-    SortCollection = new SortCollection();
+    //Paging = new Paging();
+    //SortCollection = new SortCollection();
     StudentAction = new StudentAction();
 }
-/**
- * Url для загрузки коллекции
- */
-const GetCollectionUrl = "/home/GetStudents";
 /**
  * Url удаления студента
  */
@@ -102,7 +100,7 @@ class StudentAction {
      * @param student
      */
     removeStudent(student: any): void {
-        Paging.Collection.remove(student);
+        //Paging.Collection.remove(student);
         //$.ajax({
         //    url: DeleteStudentUrl + student.Id,
         //    type: 'post',
@@ -145,104 +143,104 @@ class StudentAction {
     }
 }
 
-/**
- * Постраничный вывод
- */
-class Paging {
-    public static Collection: KnockoutObservableArray<any>;
+///**
+// * Постраничный вывод
+// */
+//class Paging {
+//    public static Collection: KnockoutObservableArray<any>;
 
-    currentPage: KnockoutObservable<any>;
-    pageSize: KnockoutObservable<number>;
-    currentPageIndex: KnockoutObservable<number>;
+//    currentPage: KnockoutObservable<any>;
+//    pageSize: KnockoutObservable<number>;
+//    currentPageIndex: KnockoutObservable<number>;
 
-    constructor() {
-        var _this = this;
-        Paging.Collection = ko.observableArray([]);
-        this.currentPage = ko.observableArray([]);
-        this.pageSize = ko.observable(5);
-        this.currentPageIndex = ko.observable(0);
-        this.getCollection();
-        this.currentPage = ko.computed(function () {
-            var pagesize = parseInt(_this.pageSize().toString(), 10),
-                startIndex = pagesize * _this.currentPageIndex(),
-                endIndex = startIndex + pagesize;
-            return Paging.Collection.slice(startIndex, endIndex);
-        });
-    }
-    /**
-     * Загрузка коллекции с сервера
-     */
-    getCollection(): void {
-        $.getJSON(GetCollectionUrl, function (data) {
-            //$.each(data, function (key, value) {
-            //    Paging.Collection.push(new ModelStudent(value.Id, value.FirstName, value.LastName, value.Gender, value.Phone));
-            //});
-            Paging.Collection(data);
-        });
-    }
+//    constructor() {
+//        var _this = this;
+//        Paging.Collection = ko.observableArray([]);
+//        this.currentPage = ko.observableArray([]);
+//        this.pageSize = ko.observable(5);
+//        this.currentPageIndex = ko.observable(0);
+//        this.getCollection();
+//        this.currentPage = ko.computed(function () {
+//            var pagesize = parseInt(_this.pageSize().toString(), 10),
+//                startIndex = pagesize * _this.currentPageIndex(),
+//                endIndex = startIndex + pagesize;
+//            return Paging.Collection.slice(startIndex, endIndex);
+//        });
+//    }
+//    /**
+//     * Загрузка коллекции с сервера
+//     */
+//    getCollection(): void {
+//        $.getJSON(GetCollectionUrl, function (data) {
+//            //$.each(data, function (key, value) {
+//            //    Paging.Collection.push(new ModelStudent(value.Id, value.FirstName, value.LastName, value.Gender, value.Phone));
+//            //});
+//            Paging.Collection(data);
+//        });
+//    }
 
-    /**
-     * Переход на следующую страницу
-     */
-    nextPage(): void {
-        if (((this.currentPageIndex() + 1) * this.pageSize()) < Paging.Collection().length) {
-            this.currentPageIndex(this.currentPageIndex() + 1);
-        }
-        else {
-            this.currentPageIndex(0);
-        }
-    };
-    /**
-     * Переход на страницу назад
-     */
-    previousPage(): void {
-        if (this.currentPageIndex() > 0) {
-            this.currentPageIndex(this.currentPageIndex() - 1);
-        }
-        else {
-            this.currentPageIndex((Math.ceil(Paging.Collection().length / this.pageSize())) - 1);
-        }
-    };
-}
+//    /**
+//     * Переход на следующую страницу
+//     */
+//    nextPage(): void {
+//        if (((this.currentPageIndex() + 1) * this.pageSize()) < Paging.Collection().length) {
+//            this.currentPageIndex(this.currentPageIndex() + 1);
+//        }
+//        else {
+//            this.currentPageIndex(0);
+//        }
+//    };
+//    /**
+//     * Переход на страницу назад
+//     */
+//    previousPage(): void {
+//        if (this.currentPageIndex() > 0) {
+//            this.currentPageIndex(this.currentPageIndex() - 1);
+//        }
+//        else {
+//            this.currentPageIndex((Math.ceil(Paging.Collection().length / this.pageSize())) - 1);
+//        }
+//    };
+//}
 /**
  * Сортировка столбца таблицы
  */
-class SortCollection {
-    static sortType: string;
-    currentColumn: KnockoutObservable<string>;
-    iconType: KnockoutObservable<string>;
+//class SortCollection {
+//    static sortType: string;
+//    currentColumn: KnockoutObservable<string>;
+//    iconType: KnockoutObservable<string>;
 
-    constructor() {
-        var _this = this;
-        SortCollection.sortType = "ascending";
-        this.currentColumn = ko.observable("");
-        this.iconType = ko.observable("");
-    }
-    /**
-     * Сортировка
-     * @param collection
-     * @param e
-     */
-    sortTable(collection: KnockoutObservableArray<any>, e): void {
-        var orderProp = $(e.target).attr("data-column");
-        if (orderProp == undefined) var orderPro = $(e.target).parent();
-        this.currentColumn(orderProp);
-        Paging.Collection.sort(function (left, right) {
-            var leftVal = left[orderProp];
-            var rightVal = right[orderProp];
-            if (SortCollection.sortType == "ascending") {
-                return leftVal < rightVal ? 1 : -1;
-            }
-            else {
-                return leftVal > rightVal ? 1 : -1;
-            }
-        });
+//    constructor() {
+//        var _this = this;
+//        SortCollection.sortType = "ascending";
+//        this.currentColumn = ko.observable("");
+//        this.iconType = ko.observable("");
+//    }
+//    /**
+//     * Сортировка
+//     * @param collection
+//     * @param e
+//     */
+//    sortTable(collection: KnockoutObservableArray<any>, e): void {
+//        var orderProp = $(e.target).attr("data-column");
+//        if (orderProp == undefined) var orderPro = $(e.target).parent();
+//        this.currentColumn(orderProp);
+//        Paging.Collection.sort(function (left, right) {
+//            var leftVal = left[orderProp];
+//            var rightVal = right[orderProp];
+//            if (SortCollection.sortType == "ascending") {
+//                return leftVal < rightVal ? 1 : -1;
+//            }
+//            else {
+//                return leftVal > rightVal ? 1 : -1;
+//            }
+//        });
 
-        // Смена иконки
-        SortCollection.sortType = (SortCollection.sortType == "ascending") ? "descending" : "ascending";
-        this.iconType((SortCollection.sortType == "ascending") ? "glyphicon glyphicon-chevron-up" : "glyphicon glyphicon-chevron-down");
-    };
-}
+//        // Смена иконки
+//        SortCollection.sortType = (SortCollection.sortType == "ascending") ? "descending" : "ascending";
+//        this.iconType((SortCollection.sortType == "ascending") ? "glyphicon glyphicon-chevron-up" : "glyphicon glyphicon-chevron-down");
+//    };
+//}
 //ko.components.register('AddStudent', {
 //    viewModel: function (params) {
 //        this.viewModel = params.$root;
@@ -317,11 +315,4 @@ ko.components.register('Paging', {
     + '<button data-bind="click: previousPage($data)" class="btn btn-sm"><i class="glyphicon glyphicon-step-backward"></i></button>'
     + '&nbsp;Страница&nbsp;<label data-bind="text: currentPageIndex() + 1" class="badge"></label>&nbsp;'
     + '<button data-bind="click: nextPage($data)" class="btn btn-sm"><i class="glyphicon glyphicon-step-forward"></i></button></span></div>'
-});
-ko.components.register('message-editor', {
-    viewModel: function (params) {
-        this.text = ko.observable(params && params.initialText || '');
-    },
-    template: '<input data-bind="value: text" /> '
-    + '<span data-bind="text: text().length"></span>'
 });

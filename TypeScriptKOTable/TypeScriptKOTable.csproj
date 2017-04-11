@@ -156,6 +156,7 @@
     <Content Include="Scripts\add-student.js" />
     <Content Include="Scripts\components\AddStudent\add-student.html" />
     <Content Include="Scripts\components\click-to-edit.html" />
+    <Content Include="Scripts\components\Paging-table\paging-table.html" />
     <Content Include="Scripts\loader.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -208,6 +209,8 @@
     <TypeScriptCompile Include="Scripts\components\AddStudent\add-student.ts" />
     <TypeScriptCompile Include="Scripts\components\click-to-edit-register.ts" />
     <TypeScriptCompile Include="Scripts\components\click-to-edit.ts" />
+    <TypeScriptCompile Include="Scripts\components\Paging-table\paging-table-register.ts" />
+    <TypeScriptCompile Include="Scripts\components\Paging-table\paging-table.ts" />
     <TypeScriptCompile Include="Scripts\require\config.ts" />
     <TypeScriptCompile Include="Scripts\TableScript.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />

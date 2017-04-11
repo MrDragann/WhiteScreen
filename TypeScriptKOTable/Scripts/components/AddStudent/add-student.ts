@@ -4,9 +4,6 @@
  */
 import ko = require("knockout");
 module ViewModel {
-    export interface clickToEditParams {
-        value: KnockoutObservable<string>;
-    }
 
     export class AddStudent {
         Id: KnockoutObservable<number>;
