@@ -1,1 +1,1 @@
-{"version":3,"file":"click-to-edit-register.js","sourceRoot":"","sources":["click-to-edit-register.ts"],"names":[],"mappings":";;IAEA,yBAAyB;IACzB,EAAE,CAAC,UAAU,CAAC,QAAQ,CAAC,eAAe,EAAE;QACpC,SAAS,EAAE,EAAE,OAAO,EAAE,0BAA0B,EAAE;QAClD,QAAQ,EAAE,EAAE,OAAO,EAAE,oCAAoC,EAAE;KAC9D,CAAC,CAAC"}
+{"version":3,"file":"click-to-edit-register.js","sourceRoot":"","sources":["click-to-edit-register.ts"],"names":[],"mappings":";;IAGA,yBAAyB;IACzB,EAAE,CAAC,UAAU,CAAC,QAAQ,CAAC,eAAe,EAAE;QACpC,SAAS,EAAE,SAAS,CAAC,oBAAoB;QACzC,QAAQ,EAAE,EAAE,OAAO,EAAE,oCAAoC,EAAE;KAC9D,CAAC,CAAC"}

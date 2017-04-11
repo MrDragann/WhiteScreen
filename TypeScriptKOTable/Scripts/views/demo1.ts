@@ -1,7 +1,7 @@
-﻿// we need knockout
+﻿// импорт knockout
 import ko = require("knockout");
 
-// ensure we register the click-to-edit component
+// регистрация компонента click-to-edit
 import clickToEdit = require("components/click-to-edit-register");
 
 // dummy line: ensures the click-to-edit component is 'referenced' otherwise

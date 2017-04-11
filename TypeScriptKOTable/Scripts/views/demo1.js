@@ -21,4 +21,4 @@ define(["require", "exports", "knockout", "components/click-to-edit-register"], 
     exports.Demo1ViewModel = Demo1ViewModel;
     ko.applyBindings(new Demo1ViewModel());
 });
-//# sourceMappingURL=demo1.js.map
+//# sourceMappingURL=Demo1.js.map
