@@ -9,7 +9,7 @@
     <button class="btn btn-default" data-bind="click: Cancel">cancel</button>
 </span>
     -->
-<form role="form" data-bind='with: ModelStudent'>
+<form role="form">
     <div class="form-group">
         <label for="inpFirstName">Имя</label>
         <input id="inpFirstName" type="text" class="form-control" data-bind="value: FirstName" />
@@ -31,4 +31,4 @@
         <input id="txtPhone" class="form-control" data-bind="value: Phone" />
     </div>
 </form>
-<input type="button" id="btnAddStudent" class="btn btn-primary" value="Добавить" data-bind="click: $root.StudentAction.addStudent" />
+<input type="button" id="btnAddStudent" class="btn btn-primary" value="Добавить" data-bind="click: addStudent" />

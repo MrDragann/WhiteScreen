@@ -16,7 +16,7 @@ define(["require", "exports", "knockout"], function (require, exports, ko) {
      * @param student
      */
             AddStudent.prototype.addStudent = function (student) {
-                var dataObject = ko.toJSON(student.ModelStudent);
+                var dataObject = ko.toJSON(student);
                 $.ajax({
                     url: AddStudentUrl,
                     type: 'post',

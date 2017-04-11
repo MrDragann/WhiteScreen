@@ -1,9 +1,13 @@
 ///<reference path="typings/jquery/jquery.d.ts" />
 ///<reference path="typings/knockout/knockout.d.ts" />
-define(["require", "exports", "components/AddStudent/add-student"], function (require, exports, AddStudent) {
+define(["require", "exports", "components/AddStudent/add-student-register"], function (require, exports, AddStudent) {
     "use strict";
     $(document).ready(function () {
-        var viewModel = new TableModel();
+        var viewModel = {
+            Paging: new Paging(),
+            SortCollection: new SortCollection(),
+            StudentAction: new StudentAction()
+        };
         ko.applyBindings(viewModel);
     });
     var tmp = AddStudent;
@@ -16,6 +20,7 @@ define(["require", "exports", "components/AddStudent/add-student"], function (re
         }
         return TableModel;
     }());
+    exports.TableModel = TableModel;
     /**
      * Url для загрузки коллекции
      */

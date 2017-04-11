@@ -2,14 +2,18 @@
 ///<reference path="typings/knockout/knockout.d.ts" />
 
 $(document).ready(function () {
-    var viewModel = new TableModel();
+    var viewModel = {
+        Paging: new Paging(),
+        SortCollection: new SortCollection(),
+        StudentAction: new StudentAction()
+    };
     ko.applyBindings(viewModel);
 });
-import AddStudent = require("components/AddStudent/add-student");
+import AddStudent = require("components/AddStudent/add-student-register");
 
 var tmp = AddStudent;
 
-class TableModel {
+export class TableModel {
     //ModelStudent = new ModelStudent();
     Paging = new Paging();
     SortCollection = new SortCollection();

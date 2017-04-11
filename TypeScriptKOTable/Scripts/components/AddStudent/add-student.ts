@@ -26,8 +26,8 @@ module ViewModel {
  * Добавление студента
  * @param student
  */
-        addStudent(student: any): void {
-            var dataObject = ko.toJSON(student.ModelStudent);
+        addStudent(student: AddStudent): void {
+            var dataObject = ko.toJSON(student);
 
             $.ajax({
                 url: AddStudentUrl,
