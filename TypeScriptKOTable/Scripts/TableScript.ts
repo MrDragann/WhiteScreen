@@ -1,5 +1,6 @@
 ﻿///<reference path="typings/jquery/jquery.d.ts" />
 ///<reference path="typings/knockout/knockout.d.ts" />
+
 import paging = require('components/Paging-table/paging-table');
 
 import AddStudent = require("components/AddStudent/add-student-register");
